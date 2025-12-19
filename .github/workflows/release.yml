@@ -33,13 +33,12 @@ jobs:
           name: python-package-distributions
           path: dist/
 
-  publish-to-github:
-    name: Publish to GitHub Packages
+  upload-to-release:
+    name: Upload to GitHub Release
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: write
 
     steps:
       - name: Download distributions
@@ -48,15 +47,7 @@ jobs:
           name: python-package-distributions
           path: dist/
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          python-version: "3.14"
-          allow-prereleases: true
-
-      - name: Install twine
-        run: pip install twine
-
-      - name: Publish to GitHub Packages
-        run: |
-          twine upload --repository-url https://upload.pkg.github.com/${{ github.repository_owner }}/${{ github.event.repository.name }} --username __token__ --password ${{ secrets.GITHUB_TOKEN }} dist/*
+          files: dist/*
